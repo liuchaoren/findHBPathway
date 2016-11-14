@@ -12,14 +12,17 @@ public class mainLifeTime {
         formator myformat = new formator();
         String basepath = args[0];
         int snapshotNum = Integer.parseInt(args[1]);
-        String outputname = args[2];
+        String sumname = args[2];
+        String statname = args[3];
 
         int index=0;
 
         List<Integer> pre = null;
         int[] res = new int[snapshotNum+1];
-        BufferedWriter output = new BufferedWriter(new FileWriter(basepath+"/" + outputname));
+        int[] waterCount = new int[snapshotNum+1];
 
+        BufferedWriter summary = new BufferedWriter(new FileWriter(basepath+"/" +sumname));
+        BufferedWriter stat = new BufferedWriter(new FileWriter(basepath+"/" +statname));
         mainLifeTime workhorse = new mainLifeTime();
 
         for (int i=1; i<=snapshotNum; i++) {
@@ -32,17 +35,57 @@ public class mainLifeTime {
                 } else {
                     res[i] = ++index;
                 }
+                waterCount[i] = oneresult.size();
                 pre = oneresult;
             } else {
                 res[i] = -1;
+                waterCount[i] = -1;
                 pre = null;
             }
         }
 
         for (int i=1; i<=snapshotNum; i++) {
-            output.write(String.format("%d\n", res[i]));
+            summary.write(String.format("%d\t%d\n", res[i], waterCount[i]));
         }
-        output.close();
+        summary.close();
+
+        HashMap<Integer, Integer> life = new HashMap<>();
+        HashMap<Integer, Integer> waters = new HashMap<>();
+        for (int i=1; i<=snapshotNum; i++) {
+            if (res[i] != -1) {
+                if (life.containsKey(res[i]))
+                    life.put(res[i], life.get(res[i])+1);
+                else
+                    life.put(res[i], 1);
+
+                waters.put(res[i], waterCount[i]);
+            }
+        }
+
+        HashMap<Integer, List<Integer>> collectWater = new HashMap<>();
+        for (int k: life.keySet()) {
+            if (! collectWater.containsKey(waters.get(k)))
+                collectWater.put(waters.get(k), new ArrayList<Integer>());
+            collectWater.get(waters.get(k)).add(life.get(k));
+        }
+
+        List<Integer> watersort = new ArrayList(collectWater.keySet());
+        Collections.sort(watersort);
+        stat.write("# path_length\toccurence\tmean_lifetime\n");
+        for (int k:watersort) {
+            stat.write(String.format("%d\t%d\t%f\n", k, collectWater.get(k).size(), workhorse.averageLife(collectWater.get(k))));
+        }
+        stat.close();
+
+    }
+
+
+    public float averageLife(List<Integer> a) {
+        float sum = (float) 0.;
+        for (int i:a) {
+            sum += i;
+        }
+        return sum/a.size()/2;
     }
 
     public boolean pathEqual(List<Integer> a, List<Integer> b) {
