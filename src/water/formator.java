@@ -77,7 +77,7 @@ public class formator {
         int pre=-1;
         List<Integer> res = new ArrayList<>();
         while ((line=myreader.readLine()) != null) {
-            if (line.substring(0,4).equals("ATOM")) {
+            if (line.length() >= 4 && line.substring(0,4).equals("ATOM")) {
                 int resid = Integer.parseInt(line.substring(22, 26).trim());
                 if (resid != pre) {
                     res.add(resid);
