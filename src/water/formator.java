@@ -86,6 +86,10 @@ public class formator {
             }
         }
         myreader.close();
+//        System.out.println(filename);
+//        for (int i:res) {
+//            System.out.println(i);
+//        }
         return res;
     }
 }
