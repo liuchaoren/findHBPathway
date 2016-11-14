@@ -63,7 +63,7 @@ public class mainLifeTime {
             return false;
         }
         for (int i=0; i<a.size(); i++) {
-            if (a.get(i) == b.get(i)) {
+            if (a.get(i).intValue() != b.get(i).intValue()) {
 //                System.out.println("jump out 3");
                 return false;
             }
