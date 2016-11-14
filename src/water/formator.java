@@ -69,4 +69,23 @@ public class formator {
         BW.close();
     }
 
+
+    public List<Integer> getPath(String filename) throws IOException {
+        BufferedReader myreader = new BufferedReader(new FileReader(filename));
+
+        String line;
+        int pre=-1;
+        List<Integer> res = new ArrayList<>();
+        while ((line=myreader.readLine()) != null) {
+            if (line.substring(0,4).equals("ATOM")) {
+                int resid = Integer.parseInt(line.substring(22, 26).trim());
+                if (resid != pre) {
+                    res.add(resid);
+                    pre = resid;
+                }
+            }
+        }
+        myreader.close();
+        return res;
+    }
 }
