@@ -14,7 +14,7 @@ public class formator {
         BufferedReader myreader = new BufferedReader(new FileReader(pdbfilename));
         String line;
         int count = 0;
-        int pre=0, newpre;
+        int pre=0;
         List<atom> allatoms = new ArrayList<>();
 
         while ((line = myreader.readLine()) != null) {
@@ -24,9 +24,10 @@ public class formator {
                 float x = Float.parseFloat(line.substring(30, 38));
                 float y = Float.parseFloat(line.substring(38, 46));
                 float z = Float.parseFloat(line.substring(46, 54));
-                atom oneatom = new atom(atomname, new float[] {x, y, z});
+                int resid = Integer.parseInt(line.substring(22, 26).trim());
+                atom oneatom = new atom(resid, atomname, new float[] {x, y, z});
 
-                if ((newpre=Integer.parseInt(line.substring(22, 26).trim())) != pre) {
+                if (resid != pre) {
                     if (count!=3) {
                         while (count >0) {
                             allatoms.remove(allatoms.size()-1);
@@ -35,7 +36,7 @@ public class formator {
                     } else {
                         count=0;
                     }
-                    pre = newpre;
+                    pre = resid;
                 }
 
                 allatoms.add(oneatom);
@@ -59,9 +60,9 @@ public class formator {
             atom O = onewater.O;
             atom H1 = onewater.H1;
             atom H2 = onewater.H2;
-            BW.write(String.format("ATOM%7d  OH2              %8.3f%8.3f%8.3f                  WT1\n", i*3+1, O.pos[0], O.pos[1], O.pos[2]));
-            BW.write(String.format("ATOM%7d  H1               %8.3f%8.3f%8.3f                  WT1\n", i*3+2, H1.pos[0], H1.pos[1], H1.pos[2]));
-            BW.write(String.format("ATOM%7d  H2               %8.3f%8.3f%8.3f                  WT1\n", i*3+3, H2.pos[0], H2.pos[1], H2.pos[2]));
+            BW.write(String.format("ATOM%7d  OH2 TIP3W%4d    %8.3f%8.3f%8.3f                  WT1\n", i*3+1, O.resid,   O.pos[0],  O.pos[1],  O.pos[2]));
+            BW.write(String.format("ATOM%7d  H1  TIP3W%4d    %8.3f%8.3f%8.3f                  WT1\n", i*3+2, H1.resid, H1.pos[0], H1.pos[1], H1.pos[2]));
+            BW.write(String.format("ATOM%7d  H2  TIP3W%4d    %8.3f%8.3f%8.3f                  WT1\n", i*3+3, H2.resid, H2.pos[0], H2.pos[1], H2.pos[2]));
         }
 
         BW.write(String.format("END"));
